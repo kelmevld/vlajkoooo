@@ -1,0 +1,50 @@
+<form role="form" [formGroup]="carsForm" (ngSubmit)="createCar(carsForm.value)">
+  <div class="alert alert-danger" style="display: none;">
+  </div>
+  <div class="form-group">
+    <label for="firstName">Model:</label>
+    <select formControlName='model'>
+      <option *ngFor="let model of models" value="{{model.ID}}">{{ model.IME }}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="lastName">Ime:</label>
+    <input id="lastName" type="text" class="form-control"  formControlName='ime'>
+  </div>
+  <div class="form-group">
+    <label for="username">Godiste:</label>
+    <input id="username" type="text" class="form-control"  formControlName='godiste'>
+  </div>
+  <div class="form-group">
+    <label for="pwd">Klometraza:</label>
+    <input id="pwd" type="text" class="form-control" formControlName='kilometraza'>
+  </div>
+  <div class="form-group">
+    <label for="pwd">Cena:</label>
+    <input id="pwd" type="text" class="form-control" formControlName='cena'>
+  </div>
+  <div class="form-group">
+    <label for="pwd">Opis:</label>
+    <textarea id="pwd" type="text" class="form-control" formControlName='opis'></textarea>
+  </div>
+  <button type="submit" class="btn btn-default">Register</button>
+</form>
+
+<table>
+  <tr>
+    <th>Model</th>
+    <th>Ime</th>
+    <th>Godiste</th>
+    <th>Kilometraza</th>
+    <th>Opis</th>
+  </tr>
+  <tr *ngFor="let car of cars">
+    <td>{{ car.MODELIME }}</td>
+    <td>{{ car.IME }}</td>
+    <td>{{ car.GODISTE }}</td>
+    <td>{{ car.KILOMETRAZA }}</td>
+    <td>{{ car.OPIS }}</td>
+    <button (click)="editCar(car.ID)">Edit</button>
+    <button (click)="deleteCar(car.ID)">Delete</button>
+  </tr>
+</table>
