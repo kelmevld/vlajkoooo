@@ -1,0 +1,377 @@
+Kreiranje fajla pomocu CAT komande
+cat > nesto.txt - onda mozes da ukucas neki tekst i da onda kazes ctrl + x
+
+spajanje vise prikaza pomocu CAT komande 
+cat /negde/jos.txt /nesto/josNeki.txt
+
+KOMANDA WC 
+ako se ne navedu parametri, prebrojava broj linija, reci i karaktera
+wc /etc/protocols
+
+parametri koji se prosledjuju mogu biti -c , -w, -l
+wc -l /etc/protocols
+
+KOMANDA CMP - poredjenje dva fajla
+cmp file1 file2
+
+KOMANDA DIFF - poredi po sadrzaju
+diff file1 file2
+
+KOMANDA SORT - sortira sadrzaj datoteke 
+sort file
+
+KOMANDA SPLIT - podelu dokumenta na vise dokumenta
+
+split fajl
+
+KOMANDA UNIQ - uklanja iz tekstualne datoteke sve duplikate linija 
+
+KOMANDA GREP - za pretrazivanje
+grep nekaRecZaPretragu nekifajl.txt
+
+KOMANDA FGREP - prikazuje sve linije datoteke ili grupe datoteka koje u sbei sadrze zadati niz karaktera
+fgrep nekiTekst txt.cao
+
+KOMANDA CP - KOPIRANJE DATOTEKE U DRUGU
+cp nesto negde
+AKO JE U PITANJU FOLDER MORA DA IDES -r posle cp
+cp c* Untitled\ Folder/ kopiraj sve one sa pocetnim slovom c
+
+kopiranje sa promenom imena ide:
+cp pravoIme.txt folder\novoIme.txt
+
+KOMANDA RM I RMDIR
+rm imena - brisanje jednog fajla
+rmdir brisanje direktorijuma
+rm * brisanje svih fajlova
+rm a* svih fajlova koji pocinju sa a
+rm -r * rekurzivno brisanje svega :D 
+
+KOMANDA MV - ISTO SKORO SVE KAO I CP
+
+KOMANDA FIND - PRETRAZIVANJE DATOTEKA I DIREKTORIJUMA
+find Komande\ CS225/ -name "cao*" - pretrazivanje foldera koji pocnje sa cao
+find nesto -user mateja -size +500
+find nesto size +100M
+find nesto ! -user mateja
+
+ZA KREIRANJE SKRIPTE 
+
+cat > skripta1
+
+naredbe...
+ctrl + x
+i onda:
+chmod +x imeSkripte
+./imeSkripte
+
+SKRIPT PROGRAMIRANJE
+
+promenljiva it=7
+ako hoces ispis kazes echo $it
+ako hoces da racunas npr it+is koristi expr
+expr $it + $is
+ako ces da mnozis ne stavljas * nego \*
+za citanje podataka sa tastature koristi se read pa ime promenljive
+read nesto
+echo "Uneo si $nesto"
+
+ako hoces da saberes ulazne to sto je korisnik uneo kazes:
+
+read broj1
+read broj2
+echo "Zbir je `$broj1 + $broj2`"
+
+ako ces da delis i to sa zarezom, onda kazes
+echo "Neka poruka `expr $broj1/$broj2`"
+
+ako ces da cuvas EXPR rezultat UVEK STAVLJAJ BEKTIK
+
+---------> UNOS PODATAKA PREKO PARAMETARA <---------
+
+broj parametara $#
+prvi parametar $1, drugi $1 itd itd..
+
+IF USLOV PROVERE 
+if [ $#=1 ]
+then
+echo "bravo"
+fi
+
+IMAS ZA LOGIKU -lt, -le, -gt, -ge
+
+---------> FOR PETLJA SA FAJLOVIMA <--------- NE RADI NESTO...
+
+for file in *
+do
+p=$( du --max-depth=1 "$file" )
+set -- $p
+#echo "$p"
+#eval \$$1
+if [ $l -gt 40000 ]
+then
+echo "Rezi $p"
+fi
+done
+
+---------> RAD SA MREZOM <---------
+
+netstat - komanda koja je glavni dijagnosticki alat pomocu kog administrator dobija izvestaj o mreznom interfejsu, tabelama rutiranja, konekcijama itd...
+
+netstat -i je izvestaj o mreznom interfejsu 
+
+netstat -r - je kernel IP routing table
+
+arp - prikazuje kesiranu arp tabelu
+
+ping ime.com - pinguje neki sajt
+
+---------> RAD SA DATOTEKAMA <---------
+
+# upis slova u datoteku...
+
+for n in {a..z}
+do
+for y in {1..1024}
+do 
+echo -n "$n" >> fajl.txt
+done
+done
+echo
+
+
+---------> Opis sistema <---------
+
+sudo lshw - daje opis sistema
+
+lshw -short - kompaktan prikaz specifikacija
+
+---------> CRONE MEHANIZAM <---------
+
+* * * * * -> minut, sat, dan u mesecu, mesec, dan u nedelji
+
+za opseg se koristi crtka 1-12
+za pojedinacnoe vrednosti 1,2,3,4,5
+
+---------> SORTIRANJE FAJLOVA U NEKOM FOLDERU Downloads <---------
+
+mv ~/Downloads/*.txt ~/Downloads/tekstovi
+mv ~/Downloads/*.docx ~/Downloads/dokumenta
+
+---------> BEKAPOVANJE PROSLEDJENOG FAJLA U NOVI DIREKTORIJUM <---------
+
+a=$(date +%T-%d_%m_%Y)
+b=$(date +%d_%m_%Y)
+mkdir /home/vladan/Desktop/vezbanjeSkripte/$b/
+cp -i $1 /home/vladan/Desktop/vezbanjeSkripte/$b/$1.$a
+
+---------> UKLANJANJE PRAZNIH MESTA <---------
+
+number=0
+FOUND=0
+for filename in *
+do
+echo "$filename" | grep -q " " #provera dal ima praznih mesta
+if [ $? -eq $FOUND ]
+then
+fname=$filename 
+n=`echo $fname | sed -e "s/ /_/g"` #zamena mesta donjom crtom
+mv "$fname" "$n" #akcija preimenovanja
+let "number += 1"
+fi
+done
+echo "Broj rename-ovanih fajlova je $number"
+
+---------> BRISANJE FAJLOVA SA NEKOM EKSTENZIJOM <---------
+
+for file in *[.txt]
+do
+rm -f $file
+echo "Removed file \"$file\""
+done
+
+---------> RADI BEKAP SVIH FAJLOVA U FOLDERU <---------
+
+#!/bin/bash
+# Mladjan Antic 481
+# Kopira fajlove u backup folder, preskacuci direktorijume.
+# 1. Ako backup folder ne postoji, kreira ga
+if [ ! -d ./bak ]
+then
+mkdir ./bak
+fi
+# 2. Za svaki fajl u trenutnom direktorijumu izlastava fajl
+for file in *
+do
+# 3. Preskace ukoliko je direktorijum...
+if [ -d $file ]
+then
+echo $file " is a directory."
+else
+# 4.Ako backup verzija postoji, preskace sve stare i bekapuje nove verzije
+# Vrednost indexa bice dodata na ime fajla.
+index=0
+if [ -f ./bak/$file.0 ]
+then
+for bakfile in `ls ./bak/$file.*`
+do
+# 5. Uvecava vrednost indexa.
+index=`expr $index + 1`
+done
+fi
+echo "Copying " $file
+cp $file ./bak/$file
+fi
+done
+
+--------------------> JOS NEKE SKRIPTE <--------------------
+
+---
+
+1.Otvara datoteku i upisuje u nju neki tekst SA TRERMINALA
+
+cat > tekstualniFajl.txt 
+sort tekstualniFajl.txt
+
+---
+
+2.Cita 2 parametra sa terminala i sabira ih i mnozi
+
+echo "Unesite prvi Broj"
+read prviBroj
+
+echo "Unesite drugi Broj"
+read drugiBroj
+
+sabiranje=`expr $prviBroj + $drugiBroj`
+
+proizvod=`expr $prviBroj \* $drugiBroj`
+
+echo "Rezultat sabiranja je: $sabiranje"
+echo "Proizvod je: $proizvod"
+
+---
+
+3. Pretrazuje REKURZIVNO (VALJDA) za fajlove vece od 256kb (ovde mozes da stavis i M kao oznaku za megabajt ili bez oznake, onda se gleda po bajtovima)
+
+find -size +256000
+
+---
+
+4. Stampa po 512 puta svako slovce iz abecede
+u datoteci /tmp/tekst.txt
+
+for n in {a..z}
+do
+for y in {1..512}
+do
+echo -n "$n" >>  /tmp/tekst.txt
+done
+done
+
+5. Sve fajlove u direktorijumu koje imaju _ u nazivu pretvara u -
+
+---
+
+number=0
+FOUND=0
+for filename in *
+do
+echo "$filename" | grep -q "_" #provera dal ima praznih mesta # PRVO PRETRAZUJES SVE FAJLOVE GDE JE _
+if [ $? -eq $FOUND ]
+then
+fname=$filename 
+n=`echo $fname | sed -e "s/_/-/g"` #zamena mesta donjom crtom DONJU CRTU MENJAS GORNJOM
+mv "$fname" "$n" #akcija preimenovanja
+let "number += 1"
+fi
+done
+echo "Broj rename-ovanih fajlova je $number"
+echo "$fname"
+echo "$n"
+
+---
+
+6. U zavisnosti od unetog broj generise se skripta sa random slovima i brojevima ( samo brojevima )
+
+---
+
+echo "Unesite broj karaktera"
+read brojKaraktera
+pom=0
+final=""
+while [ $pom -le $brojKaraktera ]
+do
+
+random=$((1 + RANDOM % 9))
+((pom++))
+final+=$random
+done
+
+echo "$final"
+
+---
+
+7. Izmesta fajlove iz jednog direktorijuma u drugi pod uslovom da su veci od 10 bajta ( fali deo za velicinu )
+
+---
+
+#!/bin/bash
+
+# 2. Za svaki fajl u trenutnom direktorijumu izlastava fajl
+for file in /home/vladan/Downloads/*
+do
+# 3. Preskace ukoliko je direktorijum...
+if [ -d $file ]
+then
+echo $file " is a directory."
+else
+
+echo "Moving " $file
+mv $file /home/vladan/Desktop/ovdepremesti
+fi
+done
+
+---
+
+8. Pozicionira se u direktorijum i fajlove sa odt ekstenzijom menja u docx ekstenziju
+
+---
+
+number=0
+FOUND=0
+for filename in /home/vladan/Desktop/ovdepremesti/*
+do
+echo "$filename" | grep -q ".odt" #provera dal ima praznih mesta # PRVO PRETRAZUJES SVE FAJLOVE GDE JE _
+if [ $? -eq $FOUND ]
+then
+fname=$filename 
+n=`echo $fname | sed -e "s/.odt/.docx/g"` #zamena mesta donjom crtom DONJU CRTU MENJAS GORNJOM
+mv "$fname" "$n" #akcija preimenovanja
+let "number += 1"
+fi
+done
+echo "Broj rename-ovanih fajlova je $number"
+echo "$fname"
+echo "$n"
+
+---
+
+9. Radi "bekap" celog foldera u tgz 
+
+---
+
+# 2. Za svaki fajl u trenutnom direktorijumu izlastava fajl
+for file in *
+do
+# 3. Preskace ukoliko je direktorijum...
+if [ -d $file ]
+then
+echo "Moving " $file
+cp -r $file /home/vladan/Desktop/bekap
+fi
+done
+
+tar -cvzf backup.tgz /home/vladan/Desktop/bekap
+
+---
